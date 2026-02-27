@@ -1,0 +1,146 @@
+﻿<Window x:Class="ChatAssistant.Desktop.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="ChatAssistant - 个性化聊天助手" Height="600" Width="900"
+        WindowStartupLocation="CenterScreen">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- 顶部栏 -->
+        <Border Grid.Row="0" Background="#2196F3" Padding="20,15">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0">
+                    <TextBlock Text="ChatAssistant" FontSize="24" FontWeight="Bold" Foreground="White"/>
+                    <TextBlock Text="让 AI 学习你的风格，帮你聊天" FontSize="12" Foreground="#E3F2FD" Margin="0,5,0,0"/>
+                </StackPanel>
+
+                <Button Grid.Column="1" Content="⚙️ 设置" Width="100" Height="40"
+                        Command="{Binding OpenSettingsCommand}"
+                        Background="White" FontSize="14" Cursor="Hand"/>
+            </Grid>
+        </Border>
+
+        <!-- 主内容区 -->
+        <Grid Grid.Row="1" Margin="20">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="300"/>
+                <ColumnDefinition Width="20"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- 左侧：会话列表 -->
+            <Border Grid.Column="0" BorderBrush="#E0E0E0" BorderThickness="1" CornerRadius="5">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <Border Grid.Row="0" Background="#F5F5F5" Padding="15,10" BorderBrush="#E0E0E0" BorderThickness="0,0,0,1">
+                        <TextBlock Text="聊天记录" FontSize="16" FontWeight="SemiBold"/>
+                    </Border>
+
+                    <ListBox Grid.Row="1" ItemsSource="{Binding Conversations}"
+                             BorderThickness="0" Background="White">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Border Padding="10" BorderBrush="#F0F0F0" BorderThickness="0,0,0,1">
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding ContactName}" FontWeight="SemiBold" FontSize="14"/>
+                                        <TextBlock Text="{Binding Platform}" FontSize="11" Foreground="Gray" Margin="0,2,0,0"/>
+                                        <TextBlock Text="{Binding LastMessage}" FontSize="12" Foreground="#666"
+                                                   TextTrimming="CharacterEllipsis" Margin="0,5,0,0"/>
+                                        <TextBlock Text="{Binding MessageCount, StringFormat='{}共 {0} 条消息'}"
+                                                   FontSize="11" Foreground="Gray" Margin="0,3,0,0"/>
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </Grid>
+            </Border>
+
+            <!-- 右侧：功能区 -->
+            <Border Grid.Column="2" BorderBrush="#E0E0E0" BorderThickness="1" CornerRadius="5">
+                <Grid Margin="30">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- 步骤1：导入聊天记录 -->
+                    <Border Grid.Row="0" Background="#E3F2FD" Padding="20" CornerRadius="5">
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="1️⃣" FontSize="24" Margin="0,0,10,0"/>
+                                <TextBlock Text="导入聊天记录" FontSize="18" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                            </StackPanel>
+                            <TextBlock Text="导入你与女生的聊天记录（支持文本和CSV格式）"
+                                       FontSize="13" Foreground="#555" Margin="0,10,0,15" TextWrapping="Wrap"/>
+                            <Button Content="📂 导入聊天记录" Height="40" FontSize="14"
+                                    Command="{Binding OpenImportCommand}"
+                                    Background="#2196F3" Foreground="White" BorderThickness="0" Cursor="Hand"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- 步骤2：分析风格 -->
+                    <Border Grid.Row="2" Background="#FFF3E0" Padding="20" CornerRadius="5">
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="2️⃣" FontSize="24" Margin="0,0,10,0"/>
+                                <TextBlock Text="分析聊天风格" FontSize="18" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                            </StackPanel>
+                            <TextBlock Text="AI 会分析你的幽默方式、常用语、话题偏好等"
+                                       FontSize="13" Foreground="#555" Margin="0,10,0,15" TextWrapping="Wrap"/>
+                            <Button Content="🤖 分析我的风格" Height="40" FontSize="14"
+                                    Command="{Binding AnalyzeStyleCommand}"
+                                    Background="#FF9800" Foreground="White" BorderThickness="0" Cursor="Hand"
+                                    IsEnabled="{Binding Conversations.Count}"/>
+                            <TextBlock Text="✅ 风格分析已完成" FontSize="13" Foreground="Green" Margin="0,10,0,0"
+                                       Visibility="{Binding HasAnalyzedStyle, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- 步骤3：开始使用 -->
+                    <Border Grid.Row="4" Background="#E8F5E9" Padding="20" CornerRadius="5">
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="3️⃣" FontSize="24" Margin="0,0,10,0"/>
+                                <TextBlock Text="开始聊天" FontSize="18" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                            </StackPanel>
+                            <TextBlock Text="输入对方消息，获取符合你风格的回复建议"
+                                       FontSize="13" Foreground="#555" Margin="0,10,0,15" TextWrapping="Wrap"/>
+                            <Button Content="💬 打开聊天助手" Height="40" FontSize="14"
+                                    Command="{Binding OpenChatAssistantCommand}"
+                                    Background="#4CAF50" Foreground="White" BorderThickness="0" Cursor="Hand"
+                                    IsEnabled="{Binding HasAnalyzedStyle}"/>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+            </Border>
+        </Grid>
+
+        <!-- 底部状态栏 -->
+        <Border Grid.Row="2" Background="#F5F5F5" Padding="20,10" BorderBrush="#E0E0E0" BorderThickness="0,1,0,0">
+            <Grid>
+                <TextBlock Text="{Binding StatusMessage}" FontSize="12" Foreground="#666"/>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <TextBlock Text="用户: " FontSize="12" Foreground="#999"/>
+                    <TextBlock Text="{Binding UserName}" FontSize="12" Foreground="#666" FontWeight="SemiBold"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>
